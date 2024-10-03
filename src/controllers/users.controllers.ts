@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { result } from 'lodash'
+import { pick, result } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { UserVerifyStatus } from '~/constants/enums'
 import HTTP_STATUS from '~/constants/httpStatus'
@@ -94,7 +94,16 @@ export const updateMeController = async (
   next: NextFunction
 ) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const { body } = req
+  const body = pick(req.body, [
+    'name',
+    'date_of_birth',
+    'bio',
+    'location',
+    'website',
+    'username',
+    'avatar',
+    'cover_photo'
+  ]) // tránh client truyen len cac trường liên quan đến password, verify status và token cũng được update vào DB
   const user = await usersService.updateMe(user_id, body)
   res.json({
     message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
