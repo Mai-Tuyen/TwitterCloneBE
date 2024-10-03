@@ -4,13 +4,13 @@ import { TokenPayload } from '~/models/requests/User.requests'
 
 export const signToken = ({
   payload,
-  privateKey = process.env.JWT_SECRET as string,
+  privateKey,
   options = {
     algorithm: 'HS256'
   }
 }: {
   payload: any
-  privateKey?: string
+  privateKey: string
   options?: jwt.SignOptions
 }) => {
   return new Promise<string>((resolve, reject) => {

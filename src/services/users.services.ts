@@ -8,6 +8,7 @@ import { signToken, verifyToken } from '~/utils/jwt'
 import { envConfig } from '~/constants/config'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { USERS_MESSAGES } from '~/constants/messages'
+import { sendVerifyRegisterEmail } from '~/utils/email'
 class UsersService {
   async checkEmailExist(email: string) {
     const user = await databaseService.users.findOne({ email })
@@ -63,18 +64,32 @@ class UsersService {
     })
   }
 
+  private signEmailVerifyToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+    return signToken({
+      payload: {
+        user_id,
+        token_type: TokenType.EmailVerifyToken,
+        verify
+      },
+      privateKey: envConfig.jwtSecretEmailVerifyToken,
+      options: {
+        expiresIn: envConfig.emailVerifyTokenExpiresIn
+      }
+    })
+  }
+
   async register(payload: RegisterReqBody) {
     const user_id = new ObjectId()
-    // const email_verify_token = await this.signEmailVerifyToken({
-    //   user_id: user_id.toString(),
-    //   verify: UserVerifyStatus.Unverified
-    // })
+    const email_verify_token = await this.signEmailVerifyToken({
+      user_id: user_id.toString(),
+      verify: UserVerifyStatus.Unverified
+    })
     await databaseService.users.insertOne(
       new User({
         ...payload,
         _id: user_id,
         username: `user${user_id.toString()}`,
-        // email_verify_token,
+        email_verify_token,
         date_of_birth: new Date(payload.date_of_birth),
         password: hashPassword(payload.password)
       })
@@ -119,6 +134,33 @@ class UsersService {
     const result = await databaseService.refreshTokens.deleteOne({ token: refresh_token })
     return {
       message: USERS_MESSAGES.LOGOUT_SUCCESS
+    }
+  }
+
+  async verifyEmail(user_id: string) {
+    // Tạo giá trị cập nhật
+    // MongoDB cập nhật giá trị
+    const [token] = await Promise.all([
+      this.signAccessAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified }),
+      databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
+        {
+          $set: {
+            email_verify_token: '',
+            verify: UserVerifyStatus.Verified,
+            updated_at: '$$NOW'
+          }
+        }
+      ])
+    ])
+    const [access_token, refresh_token] = token
+    const { iat, exp } = await this.decodeRefreshToken(refresh_token)
+
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token, iat, exp })
+    )
+    return {
+      access_token,
+      refresh_token
     }
   }
 }
