@@ -1,10 +1,17 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { result } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { UserVerifyStatus } from '~/constants/enums'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
-import { LogoutReqBody, RegisterReqBody, TokenPayload, VerifyEmailReqBody } from '~/models/requests/User.requests'
+import {
+  LogoutReqBody,
+  RegisterReqBody,
+  TokenPayload,
+  UpdateMeReqBody,
+  VerifyEmailReqBody
+} from '~/models/requests/User.requests'
 import databaseService from '~/services/database.services'
 import usersService from '~/services/users.services'
 
@@ -70,4 +77,27 @@ export const verifyEmailController = async (
     result
   })
   next()
+}
+
+export const getMeController = async (req: Request, res: Response, next: NextFunction) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const user = await usersService.getMe(user_id)
+  res.json({
+    message: USERS_MESSAGES.GET_ME_SUCCESS,
+    result: user
+  })
+}
+
+export const updateMeController = async (
+  req: Request<ParamsDictionary, any, UpdateMeReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { body } = req
+  const user = await usersService.updateMe(user_id, body)
+  res.json({
+    message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
+    result: user
+  })
 }

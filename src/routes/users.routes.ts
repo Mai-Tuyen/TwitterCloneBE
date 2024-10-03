@@ -1,8 +1,10 @@
 import { Router } from 'express'
 import {
+  getMeController,
   loginController,
   logoutController,
   registerController,
+  updateMeController,
   verifyEmailController
 } from '~/controllers/users.controllers'
 import {
@@ -10,7 +12,9 @@ import {
   emailVerifyTokenValidator,
   loginValidator,
   refreshTokenValidator,
-  registerValidator
+  registerValidator,
+  updateMeValidator,
+  verifiedUserValidator
 } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 const usersRouter = Router()
@@ -41,4 +45,32 @@ usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapReq
  * Body: { email_verify_token: string }
  */
 usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(verifyEmailController))
+
+// skip resend email, forgot password, reset password, change password
+
+/**
+ * Description. Get current user login profile
+ * Path: /me
+ * Method: GET
+ * Header: none
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: none
+ */
+usersRouter.get('/me', accessTokenValidator, wrapRequestHandler(getMeController))
+
+/**
+ * Description. Update current user profile
+ * Path: /me
+ * Method: PATCH
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: UserSchema property
+ */
+usersRouter.patch(
+  '/me',
+  accessTokenValidator,
+  verifiedUserValidator,
+  updateMeValidator,
+  wrapRequestHandler(updateMeController)
+)
+
 export default usersRouter
