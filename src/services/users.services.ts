@@ -9,6 +9,10 @@ import { envConfig } from '~/constants/config'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { sendVerifyRegisterEmail } from '~/utils/email'
+import { verify } from 'crypto'
+import { ErrorWithStatus } from '~/models/Errors'
+import HTTP_STATUS from '~/constants/httpStatus'
+import Follower from '~/models/schemas/Follower.schema'
 class UsersService {
   async checkEmailExist(email: string) {
     const user = await databaseService.users.findOne({ email })
@@ -196,6 +200,50 @@ class UsersService {
       }
     )
     return user
+  }
+
+  async getProfile(username: string) {
+    const user = await databaseService.users.findOne(
+      { username },
+      {
+        projection: {
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0
+        }
+      }
+    )
+
+    if (!user) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.USER_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    return user
+  }
+
+  async followProfile(user_id: string, followed_user_id: string) {
+    // kiểm tra xem mình đã follow ông này hay chưa
+    const isFollowed = await databaseService.followers.findOne({
+      user_id: new ObjectId(user_id),
+      followed_user_id: new ObjectId(followed_user_id)
+    })
+    if (isFollowed) {
+      return {
+        message: USERS_MESSAGES.FOLLOWED
+      }
+    }
+    await databaseService.followers.insertOne(
+      new Follower({
+        user_id: new ObjectId(user_id),
+        followed_user_id: new ObjectId(followed_user_id)
+      })
+    )
+    return {
+      message: USERS_MESSAGES.FOLLOW_SUCCESS
+    }
   }
 }
 

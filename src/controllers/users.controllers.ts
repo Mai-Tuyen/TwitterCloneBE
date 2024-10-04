@@ -6,6 +6,7 @@ import { UserVerifyStatus } from '~/constants/enums'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
 import {
+  FollowReqBody,
   LogoutReqBody,
   RegisterReqBody,
   TokenPayload,
@@ -109,4 +110,25 @@ export const updateMeController = async (
     message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
     result: user
   })
+}
+
+export const getProfileController = async (req: Request, res: Response, next: NextFunction) => {
+  // tên biến username được đặt trong route: /:username
+  const { username } = req.params
+  const user = await usersService.getProfile(username)
+  res.json({
+    message: USERS_MESSAGES.GET_PROFILE_SUCCESS,
+    result: user
+  })
+}
+
+export const followController = async (
+  req: Request<ParamsDictionary, any, FollowReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { followed_user_id } = req.body
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const result = await usersService.followProfile(user_id, followed_user_id)
+  res.json(result)
 }

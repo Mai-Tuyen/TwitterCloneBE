@@ -1,9 +1,10 @@
 import { error } from 'console'
 import { NextFunction, Request, Response } from 'express'
 import { checkSchema, ParamSchema } from 'express-validator'
-import { request } from 'http'
+import { request, validateHeaderValue } from 'http'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { capitalize } from 'lodash'
+import { ObjectId } from 'mongodb'
 import { envConfig } from '~/constants/config'
 import { UserVerifyStatus } from '~/constants/enums'
 import HTTP_STATUS from '~/constants/httpStatus'
@@ -358,4 +359,30 @@ export const updateMeValidator = validate(
     },
     ['body']
   )
+)
+
+export const followValidator = validate(
+  checkSchema({
+    followed_user_id: {
+      custom: {
+        options: async (value, { req }) => {
+          if (!ObjectId.isValid(value)) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.INVALID_USER_ID,
+              status: HTTP_STATUS.NOT_FOUND
+            })
+          }
+          const followed_user = await databaseService.users.findOne({
+            _id: ObjectId.createFromHexString(value)
+          })
+          if (!followed_user) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.INVALID_USER_ID,
+              status: HTTP_STATUS.NOT_FOUND
+            })
+          }
+        }
+      }
+    }
+  })
 )

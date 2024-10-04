@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import User from '~/models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { envConfig } from '~/constants/config'
+import Follower from '~/models/schemas/Follower.schema'
 dotenv.config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@twitterclonecluster.eaq2m.mongodb.net/?retryWrites=true&w=majority&appName=TwitterCloneCluster`
 class DatabaseService {
@@ -29,6 +30,10 @@ class DatabaseService {
 
   get refreshTokens(): Collection<RefreshToken> {
     return this.db.collection(envConfig.dbRefreshTokensCollection)
+  }
+
+  get followers(): Collection<Follower> {
+    return this.db.collection(envConfig.dbFollowersCollection)
   }
 }
 
