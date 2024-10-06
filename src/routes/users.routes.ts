@@ -5,6 +5,7 @@ import {
   getProfileController,
   loginController,
   logoutController,
+  oauthController,
   registerController,
   unfollowController,
   updateMeController,
@@ -34,6 +35,15 @@ const usersRouter = Router()
  */
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
+
+/**
+ * Description. Login google
+ * Path: /oauth/google
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: { refresh_token: string }
+ */
+usersRouter.get('/oauth/google', wrapRequestHandler(oauthController))
 
 /**
  * Description. Logout a user

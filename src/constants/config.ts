@@ -1,4 +1,5 @@
 import { config } from 'dotenv'
+import argv from 'minimist'
 config()
 export const envConfig = {
   port: (process.env.PORT as string) || 4000,
@@ -35,3 +36,5 @@ export const envConfig = {
   sesFromAddress: process.env.SES_FROM_ADDRESS as string,
   s3BucketName: process.env.S3_BUCKET_NAME as string
 }
+const options = argv(process.argv.slice(2))
+export const isProduction = Boolean(options.production)
