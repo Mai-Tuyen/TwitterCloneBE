@@ -7,7 +7,7 @@ import { defaultErrorHandler } from './middlewares/error.middlewares'
 import { initFolder } from './utils/file'
 import { envConfig } from './constants/config'
 import argv from 'minimist'
-import { UPLOAD_DIR } from './constants/dir'
+import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 const app = express()
 const port = envConfig.port
@@ -21,7 +21,7 @@ app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/static', staticRouter) // serving static file cách 2
 
-// app.use('/static', express.static(UPLOAD_DIR))   // serving static file cách 1
+// app.use('/static', express.static(UPLOAD_IMAGE_DIR))   // serving static file cách 1
 
 app.use(defaultErrorHandler as any)
 
