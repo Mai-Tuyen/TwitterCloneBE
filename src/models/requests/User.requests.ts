@@ -44,3 +44,7 @@ export interface FollowReqBody {
 export interface UnfollowReqPrams extends ParamsDictionary {
   followed_user_id: string
 }
+
+export interface RefreshTokenReqBody {
+  refresh_token: string
+}

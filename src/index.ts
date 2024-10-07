@@ -15,7 +15,11 @@ const port = envConfig.port
 // Create folder upload if not exist
 initFolder()
 
-databaseService.connect()
+databaseService.connect().then(() => {
+  databaseService.indexUsers()
+  databaseService.indexRefreshTokens()
+  databaseService.indexFollowers()
+})
 app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)

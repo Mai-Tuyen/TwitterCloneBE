@@ -6,6 +6,7 @@ import {
   loginController,
   logoutController,
   oauthController,
+  refreshTokenController,
   registerController,
   unfollowController,
   updateMeController,
@@ -35,6 +36,14 @@ const usersRouter = Router()
  */
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
+
+/**
+ * Description. Refresh Token
+ * Path: /refresh-token
+ * Method: POST
+ * Body: { refresh_token: string }
+ */
+usersRouter.post('/refresh-token', refreshTokenValidator, wrapRequestHandler(refreshTokenController))
 
 /**
  * Description. Login google
