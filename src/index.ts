@@ -9,6 +9,7 @@ import { envConfig } from './constants/config'
 import argv from 'minimist'
 import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
+import tweetsRouter from './routes/tweets.routes'
 const app = express()
 const port = envConfig.port
 
@@ -23,6 +24,7 @@ databaseService.connect().then(() => {
 app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
+app.use('/tweet', tweetsRouter)
 app.use('/static', staticRouter) // serving static file cách 2
 
 // app.use('/static', express.static(UPLOAD_IMAGE_DIR))   // serving static file cách 1
