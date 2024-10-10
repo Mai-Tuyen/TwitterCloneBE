@@ -8,6 +8,7 @@ class TweetService {
   async checkAndCreateHashtags(hashtags: string[]) {
     const hashtagDocuments = await Promise.all(
       hashtags.map((hashtag) => {
+        // nếu chưa tồn tại hashtag đó trong DB thì tạo mới
         return databaseService.hashtags.findOneAndUpdate(
           { name: hashtag },
           { $setOnInsert: new Hashtag({ name: hashtag }) },

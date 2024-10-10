@@ -10,6 +10,8 @@ import argv from 'minimist'
 import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import tweetsRouter from './routes/tweets.routes'
+import bookmarkRouter from './routes/bookmarks.routes'
+import likesRouter from './routes/likes.routes'
 const app = express()
 const port = envConfig.port
 
@@ -24,7 +26,9 @@ databaseService.connect().then(() => {
 app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
-app.use('/tweet', tweetsRouter)
+app.use('/tweets', tweetsRouter)
+app.use('/bookmarks', bookmarkRouter)
+app.use('/likes', likesRouter)
 app.use('/static', staticRouter) // serving static file cách 2
 
 // app.use('/static', express.static(UPLOAD_IMAGE_DIR))   // serving static file cách 1
