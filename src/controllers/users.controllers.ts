@@ -16,6 +16,7 @@ import {
   UpdateMeReqBody,
   VerifyEmailReqBody
 } from '~/models/requests/User.requests'
+import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import usersService from '~/services/users.services'
 
@@ -37,7 +38,7 @@ export const loginController = async (
   next: NextFunction
 ) => {
   // custom Request type at type.d.ts
-  const user = req.user
+  const user = req.user as User
   const result = await usersService.login(user)
   res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
