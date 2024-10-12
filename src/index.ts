@@ -12,6 +12,7 @@ import staticRouter from './routes/static.routes'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarkRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
+import searchRouter from './routes/search.routes'
 const app = express()
 const port = envConfig.port
 
@@ -29,6 +30,7 @@ app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)
 app.use('/bookmarks', bookmarkRouter)
 app.use('/likes', likesRouter)
+app.use('/search', searchRouter)
 app.use('/static', staticRouter) // serving static file cách 2
 
 // app.use('/static', express.static(UPLOAD_IMAGE_DIR))   // serving static file cách 1
