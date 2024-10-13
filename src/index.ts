@@ -4,8 +4,9 @@ import databaseService from '~/services/database.services'
 import usersRouter from './routes/users.routes'
 import mediasRouter from './routes/medias.routes'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
+import cors, { CorsOptions } from 'cors'
 import { initFolder } from './utils/file'
-import { envConfig } from './constants/config'
+import { envConfig, isProduction } from './constants/config'
 import argv from 'minimist'
 import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
@@ -14,6 +15,10 @@ import bookmarkRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
 const app = express()
+const corsOptions: CorsOptions = {
+  origin: isProduction ? envConfig.clientUrl : '*'
+}
+app.use(cors(corsOptions))
 const port = envConfig.port
 
 // Create folder upload if not exist
