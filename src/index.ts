@@ -7,20 +7,30 @@ import { defaultErrorHandler } from './middlewares/error.middlewares'
 import cors, { CorsOptions } from 'cors'
 import { initFolder } from './utils/file'
 import { envConfig, isProduction } from './constants/config'
-import argv from 'minimist'
 import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarkRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
+import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 const app = express()
+const port = envConfig.port
+
+app.use(helmet())
 const corsOptions: CorsOptions = {
   origin: isProduction ? envConfig.clientUrl : '*'
 }
 app.use(cors(corsOptions))
-const port = envConfig.port
-
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers
+  // store: ... , // Use an external store for more precise rate limiting
+})
+app.use(limiter)
 // Create folder upload if not exist
 initFolder()
 
