@@ -1,10 +1,11 @@
 import { Request } from 'express'
 import mime from 'mime'
 import { getNameFromFullname, handleuploadImage, handleuploadVideo } from '~/utils/file'
-import sharp from 'sharp'
+// import sharp from 'sharp'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
 import path from 'path'
 import fs from 'fs'
+import { Jimp } from 'jimp'
 import { envConfig, isProduction } from '~/constants/config'
 import { MediaType } from '~/constants/enums'
 import { Media } from '~/models/Other'
@@ -20,7 +21,12 @@ class MediasService {
         const newName = getNameFromFullname(file.newFilename)
         const newFullFilename = `${newName}.jpg`
         const newPath = path.resolve(UPLOAD_IMAGE_DIR, newFullFilename)
-        await sharp(file.filepath).jpeg().toFile(newPath)
+        Jimp.read(file.filepath).then((image: any) => {
+          return image.quality(80).write(newPath)
+        })
+
+        // await sharp(file.filepath).jpeg().toFile(newPath)
+
         const s3Result = await uploadFileToS3({
           filename: 'images/' + newFullFilename,
           filepath: newPath,

@@ -35,13 +35,13 @@
     "express-validator": "^7.2.0",
     "formidable": "^3.5.1",
     "helmet": "^8.0.0",
+    "jimp": "^1.6.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mime": "3.0.0",
     "minimist": "^1.2.8",
     "mongodb": "^6.9.0",
     "nodejs-ts": "file:",
-    "sharp": "^0.33.5",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
