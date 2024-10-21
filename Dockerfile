@@ -11,7 +11,6 @@ COPY ./src ./src
 # COPY ./openapi ./openapi
 
 # RUN apk update && apk add bash
-# RUN apk add --no-cache ffmpeg
 RUN apk add python3
 RUN npm install pm2 -g
 RUN npm install
